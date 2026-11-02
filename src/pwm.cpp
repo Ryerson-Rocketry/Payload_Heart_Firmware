@@ -34,33 +34,25 @@ esp_err_t mcpwmComparatorInit(){
     mcpwm_comparator_config_t comparatorConfig = {
         .flags = {
             .update_cmp_on_tez = true,
-            // .update_cmp_on_tep = false,
-            // .update_cmp_on_sync = false,
         },
     };
     ESP_ERROR_CHECK(mcpwm_new_comparator(operatorHandle, &comparatorConfig, &comparator));
-    ESP_ERROR_CHECK(mcpwm_comparator_set_compare_value(comparator, 500)); // Duty cycle = 500/1000 * 100% = 50%
+    ESP_ERROR_CHECK(mcpwm_comparator_set_compare_value(comparator, 500)); 
     return ESP_OK;
 }
 
 esp_err_t mcpwmGeneratorInit(){
     mcpwm_generator_config_t generatorConfig = {
-        .gen_gpio_num = motorPin//, 
-        // .flags.invert = false,
+        .gen_gpio_num = motorPin
     };
     ESP_ERROR_CHECK(mcpwm_new_generator(operatorHandle, &generatorConfig, &generator));
 
-    // comparator here instead?
     ESP_ERROR_CHECK(mcpwm_generator_set_action_on_timer_event(
         generator,
-        // (mcpwm_gen_timer_event_action_t) {
         MCPWM_GEN_TIMER_EVENT_ACTION(
             MCPWM_TIMER_DIRECTION_UP,
             MCPWM_TIMER_EVENT_EMPTY,
             MCPWM_GEN_ACTION_HIGH
-            // .direction = MCPWM_TIMER_DIRECTION_UP,
-            // .event = MCPWM_TIMER_EVENT_EMPTY,
-            // .action = MCPWM_GEN_ACTION_HIGH,
         )));
     ESP_ERROR_CHECK(mcpwm_generator_set_action_on_compare_event(
         generator,
@@ -69,17 +61,12 @@ esp_err_t mcpwmGeneratorInit(){
             comparator,
             MCPWM_GEN_ACTION_LOW
          )));
-        // (mcpwm_gen_compare_event_action_t) {
-        //     .direction = MCPWM_TIMER_DIRECTION_UP,
-        //     .comparator = comparator,
-        //     .action = MCPWM_GEN_ACTION_LOW,
-        // }));
     return ESP_OK;
 }
 
 esp_err_t setDutyCycle(uint8_t dutyCyclePercent){
-    if (dutyCyclePercent > 100 || dutyCyclePercent < 0) {
-        return ESP_ERR_INVALID_ARG;
+    if (dutyCyclePercent > 50) {
+        dutyCyclePercent = 50;
     }
     return mcpwm_comparator_set_compare_value(comparator, dutyCyclePercent * 10);
 }
