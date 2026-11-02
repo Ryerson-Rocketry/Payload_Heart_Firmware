@@ -79,19 +79,15 @@ void loop() {
 // } 
 
 void vPumpHeart(void *argument){
-  // setup, needs to be optimized as a percentage
-  uint8_t highDutyCycle = 50; // 50% duty cycle
-  uint8_t lowDutyCycle = 0;   // 0% duty cycle
+  uint8_t dutyCyclePercent;
 
   for(;;){
-    // use pwm to control the pump
-    Serial.println("Motor ON");
-    ESP_ERROR_CHECK(setDutyCycle(highDutyCycle));
+    dutyCyclePercent = 50;
+    ESP_ERROR_CHECK(setDutyCycle(dutyCyclePercent));
     vTaskDelay(pdMS_TO_TICKS(1000));
 
-    // --- MOTOR OFF (e.g., Rest for 3 seconds) ---
-    Serial.println("Motor OFF (0V)");
-    ESP_ERROR_CHECK(setDutyCycle(lowDutyCycle));
+    dutyCyclePercent = 0;
+    ESP_ERROR_CHECK(setDutyCycle(dutyCyclePercent));
     vTaskDelay(pdMS_TO_TICKS(1666));
   }
 }

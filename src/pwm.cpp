@@ -37,7 +37,7 @@ esp_err_t mcpwmComparatorInit(){
         },
     };
     ESP_ERROR_CHECK(mcpwm_new_comparator(operatorHandle, &comparatorConfig, &comparator));
-    ESP_ERROR_CHECK(mcpwm_comparator_set_compare_value(comparator, 500)); // Duty cycle = 500/1000 * 100% = 50%
+    ESP_ERROR_CHECK(mcpwm_comparator_set_compare_value(comparator, 500)); 
     return ESP_OK;
 }
 
@@ -47,7 +47,6 @@ esp_err_t mcpwmGeneratorInit(){
     };
     ESP_ERROR_CHECK(mcpwm_new_generator(operatorHandle, &generatorConfig, &generator));
 
-    // comparator here instead?
     ESP_ERROR_CHECK(mcpwm_generator_set_action_on_timer_event(
         generator,
         MCPWM_GEN_TIMER_EVENT_ACTION(
@@ -66,8 +65,8 @@ esp_err_t mcpwmGeneratorInit(){
 }
 
 esp_err_t setDutyCycle(uint8_t dutyCyclePercent){
-    if (dutyCyclePercent > 100) {
-        dutyCyclePercent = 100;
+    if (dutyCyclePercent > 50) {
+        dutyCyclePercent = 50;
     }
     return mcpwm_comparator_set_compare_value(comparator, dutyCyclePercent * 10);
 }
