@@ -6,6 +6,7 @@
 #include "freertos/task.h"
 #include "freertos/semphr.h"
 #include "pwm.hpp"
+#include "pressure.hpp"
 
 TaskHandle_t vReadTempHandle;
 TaskHandle_t vReadPressureHandle;
@@ -16,7 +17,7 @@ SemaphoreHandle_t gI2CMutex;
 
 // Task headers
 // void vReadTemp(void *argument);
-// void vReadPressure(void *argument);
+void vReadPressure(void *argument);
 // void vReadFlowRate(void *argument);
 void vPumpHeart(void *argument);
 
@@ -35,9 +36,11 @@ void setup() {
   ESP_ERROR_CHECK(mcpwm_timer_enable(timer));
   ESP_ERROR_CHECK(mcpwm_timer_start_stop(timer, MCPWM_TIMER_START_NO_STOP));
 
+  pressureInit();
+
   // Create tasks (Function, name of task, stack size, parameters, priority, handle)
   // xTaskCreate(vReadTemp, "ReadTemperature", 1024, NULL, 2, &vReadTempHandle);
-  // xTaskCreate(vReadPressure, "ReadPressure", 1024, NULL, 2, &vReadPressureHandle);
+  xTaskCreate(vReadPressure, "ReadPressure", 1024, NULL, 2, &vReadPressureHandle);
   // xTaskCreate(vReadFlowRate, "ReadFlowRate", 1024, NULL, 2, &vReadFlowRateHandle);
   xTaskCreate(vPumpHeart, "PumpHeart", 1024, NULL, 1, &vPumpHeartHandle);
 
@@ -60,16 +63,16 @@ void loop() {
 //   }
 // }
 
-// void vReadPressure(void *argument){
-//   // setup
-//   for(;;){
-//     if (xSemaphoreTake(gI2CMutex, 100) == pdTRUE)
-//     {
-//       // read the sensor using i2c
-//       xSemaphoreGive(gI2CMutex);
-//     }
-//   }
-// }
+void vReadPressure(void *argument){
+  for(;;){
+    // read the analog sensor, convert voltage to psi
+    float pressurePsi = readPressurePsi();
+
+    Serial.printf("Pressure: %.2f psi\n", pressurePsi);
+
+    vTaskDelay(pdMS_TO_TICKS(100));
+  }
+}
 
 // void vReadFlowRate(void *argument){
 //   // setup
