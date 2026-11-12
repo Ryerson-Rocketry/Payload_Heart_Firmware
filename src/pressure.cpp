@@ -10,13 +10,17 @@ namespace {
 }
 
 void pressureInit(){
-  pinMode(pressurePin, INPUT);
   analogReadResolution(12);
+
+  // First read initializes the pin as an ADC channel.
+  analogRead(pressurePin);
+
   analogSetPinAttenuation(pressurePin, ADC_11db);
 }
 
 float readPressurePsi(){
   float adcVolts = analogReadMilliVolts(pressurePin) / 1000.0f; // Convert mV to V
+  Serial.printf("ADC pin: %.3f V\n", adcVolts);
 
   float sensorVolts = adcVolts * pressureDividerGain; // Scale up to full voltage from divider circuit
 

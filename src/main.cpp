@@ -40,9 +40,9 @@ void setup() {
 
   // Create tasks (Function, name of task, stack size, parameters, priority, handle)
   // xTaskCreate(vReadTemp, "ReadTemperature", 1024, NULL, 2, &vReadTempHandle);
-  xTaskCreate(vReadPressure, "ReadPressure", 1024, NULL, 2, &vReadPressureHandle);
+  xTaskCreate(vReadPressure, "ReadPressure", 4096, NULL, 2, &vReadPressureHandle);
   // xTaskCreate(vReadFlowRate, "ReadFlowRate", 1024, NULL, 2, &vReadFlowRateHandle);
-  xTaskCreate(vPumpHeart, "PumpHeart", 1024, NULL, 1, &vPumpHeartHandle);
+  xTaskCreate(vPumpHeart, "PumpHeart", 4096, NULL, 1, &vPumpHeartHandle);
 
   Wire.begin(); 
   Serial.println("Starting ESP32!"); 
@@ -68,7 +68,7 @@ void vReadPressure(void *argument){
     // read the analog sensor, convert voltage to psi
     float pressurePsi = readPressurePsi();
 
-    Serial.printf("Pressure: %.2f psi\n", pressurePsi);
+    // Serial.printf("Pressure: %.2f psi\n", pressurePsi);
 
     vTaskDelay(pdMS_TO_TICKS(100));
   }
